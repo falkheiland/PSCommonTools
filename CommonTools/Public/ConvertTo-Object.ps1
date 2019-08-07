@@ -21,8 +21,10 @@ function ConvertTo-Object
   2      1
 
   .NOTES
+  Mathias R. Jessen
   https://gist.github.com/IISResetMe/654b302383a687bd92faa8c8c3ab28fa
   #>
+
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
     [AllowEmptyString()]
