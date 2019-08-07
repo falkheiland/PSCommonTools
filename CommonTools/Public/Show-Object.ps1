@@ -1,4 +1,4 @@
-function Show-Object
+﻿function Show-Object
 {
   #############################################################################
   ##
@@ -8,59 +8,59 @@ function Show-Object
   ## by Lee Holmes (http://www.leeholmes.com/guide)
   ##
   ##############################################################################
-    
+
   <#
-    
+
     .SYNOPSIS
-    
+
     Provides a graphical interface to let you explore and navigate an object.
-    
-    
+
+
     .EXAMPLE
-    
+
     PS > $ps = { Get-Process -ID $pid }.Ast
     PS > Show-Object $ps
-    
+
     #>
-    
+
   param(
     ## The object to examine
     [Parameter(ValueFromPipeline = $true)]
     $InputObject
   )
-    
+
   Set-StrictMode -Version 3
-    
+
   Add-Type -Assembly System.Windows.Forms
-    
+
   ## Figure out the variable name to use when displaying the
   ## object navigation syntax. To do this, we look through all
   ## of the variables for the one with the same object identifier.
-  $rootVariableName = dir variable:\* -Exclude InputObject, Args |
+  $rootVariableName = Get-ChildItem variable:\* -Exclude InputObject, Args |
   Where-Object {
     $_.Value -and
     ($_.Value.GetType() -eq $InputObject.GetType()) -and
     ($_.Value.GetHashCode() -eq $InputObject.GetHashCode())
   }
-    
+
   ## If we got multiple, pick the first
-  $rootVariableName = $rootVariableName | % Name | select -First 1
-    
+  $rootVariableName = $rootVariableName | ForEach-Object Name | Select-Object -First 1
+
   ## If we didn't find one, use a default name
   if (-not $rootVariableName)
   {
     $rootVariableName = "InputObject"
   }
-    
+
   ## A function to add an object to the display tree
   function PopulateNode($node, $object)
   {
     ## If we've been asked to add a NULL object, just return
     if (-not $object)
     {
-      return 
+      return
     }
-    
+
     ## If the object is a collection, then we need to add multiple
     ## children to the node
     if ([System.Management.Automation.LanguagePrimitives]::GetEnumerator($object))
@@ -69,7 +69,7 @@ function Show-Object
       ## In this situation, PowerShell returns the parent object back when you
       ## try to access the [0] property.
       $isOnlyEnumerable = $object.GetHashCode() -eq $object[0].GetHashCode()
-    
+
       ## Go through all the items
       $count = 0
       foreach ($childObjectValue in $object)
@@ -79,7 +79,7 @@ function Show-Object
         $newChildNode = New-Object Windows.Forms.TreeNode
         $newChildNode.Text = "$($node.Name)[$count] = $childObjectValue"
         $newChildNode.ToolTipText = $childObjectValue.GetType()
-                   
+
         ## Use the node name to keep track of the actual property name
         ## and syntax to access that property.
         ## If we can't use the index operator to access children, add
@@ -89,15 +89,15 @@ function Show-Object
         {
           $newChildNode.Name = "@"
         }
-    
+
         $newChildNode.Name += "[$count]"
-        $null = $node.Nodes.Add($newChildNode)               
-    
+        $null = $node.Nodes.Add($newChildNode)
+
         ## If this node has children or properties, add a placeholder
         ## node underneath so that the node shows a '+' sign to be
         ## expanded.
         AddPlaceholderIfRequired $newChildNode $childObjectValue
-    
+
         $count++
       }
     }
@@ -115,7 +115,7 @@ function Show-Object
         {
           $childObjectType = $childObject.GetType()
         }
-    
+
         ## Create the new node to add, with the node text of the item and
         ## value, along with its type
         $childNode = New-Object Windows.Forms.TreeNode
@@ -125,10 +125,10 @@ function Show-Object
         {
           $childNode.ToolTipText += "[]"
         }
-                
+
         $childNode.Name = $child.Name
         $null = $node.Nodes.Add($childNode)
-    
+
         ## If this node has children or properties, add a placeholder
         ## node underneath so that the node shows a '+' sign to be
         ## expanded.
@@ -136,7 +136,7 @@ function Show-Object
       }
     }
   }
-    
+
   ## A function to add a placeholder if required to a node.
   ## If there are any properties or children for this object, make a temporary
   ## node with the text "..." so that the node shows a '+' sign to be
@@ -145,50 +145,50 @@ function Show-Object
   {
     if (-not $object)
     {
-      return 
+      return
     }
-    
+
     if ([System.Management.Automation.LanguagePrimitives]::GetEnumerator($object) -or
       @($object.PSObject.Properties))
     {
       $null = $node.Nodes.Add( (New-Object Windows.Forms.TreeNode "...") )
     }
   }
-    
+
   ## A function invoked when a node is selected.
   function OnAfterSelect
   {
     param($Sender, $TreeViewEventArgs)
-    
+
     ## Determine the selected node
     $nodeSelected = $Sender.SelectedNode
-    
+
     ## Walk through its parents, creating the virtual
     ## PowerShell syntax to access this property.
     $nodePath = GetPathForNode $nodeSelected
-    
+
     ## Now, invoke that PowerShell syntax to retrieve
     ## the value of the property.
     $resultObject = Invoke-Expression $nodePath
     $outputPane.Text = $nodePath
-    
+
     ## If we got some output, put the object's member
     ## information in the text box.
     if ($resultObject)
     {
-      $members = Get-Member -InputObject $resultObject | Out-String       
+      $members = Get-Member -InputObject $resultObject | Out-String
       $outputPane.Text += "`n" + $members
     }
   }
-    
+
   ## A function invoked when the user is about to expand a node
   function OnBeforeExpand
   {
     param($Sender, $TreeViewCancelEventArgs)
-    
+
     ## Determine the selected node
     $selectedNode = $TreeViewCancelEventArgs.Node
-    
+
     ## If it has a child node that is the placeholder, clear
     ## the placehoder node.
     if ($selectedNode.FirstNode -and
@@ -200,36 +200,36 @@ function Show-Object
     {
       return
     }
-    
+
     ## Walk through its parents, creating the virtual
     ## PowerShell syntax to access this property.
-    $nodePath = GetPathForNode $selectedNode 
-    
+    $nodePath = GetPathForNode $selectedNode
+
     ## Now, invoke that PowerShell syntax to retrieve
     ## the value of the property.
     Invoke-Expression "`$resultObject = $nodePath"
-    
+
     ## And populate the node with the result object.
     PopulateNode $selectedNode $resultObject
   }
-    
+
   ## A function to handle key presses on the tree view.
   ## In this case, we capture ^C to copy the path of
   ## the object property that we're currently viewing.
   function OnTreeViewKeyPress
   {
     param($Sender, $KeyPressEventArgs)
-    
+
     ## [Char] 3 = Control-C
     if ($KeyPressEventArgs.KeyChar -eq 3)
     {
       $KeyPressEventArgs.Handled = $true
-    
+
       ## Get the object path, and set it on the clipboard
       $node = $Sender.SelectedNode
       $nodePath = GetPathForNode $node
       [System.Windows.Forms.Clipboard]::SetText($nodePath)
-    
+
       $form.Close()
     }
     elseif ([System.Windows.Forms.Control]::ModifierKeys -eq "Control")
@@ -238,7 +238,7 @@ function Show-Object
       {
         $SCRIPT:currentFontSize++
         UpdateFonts $SCRIPT:currentFontSize
-            
+
         $KeyPressEventArgs.Handled = $true
       }
       elseif ($KeyPressEventArgs.KeyChar -eq '-')
@@ -246,10 +246,10 @@ function Show-Object
         $SCRIPT:currentFontSize--
         if ($SCRIPT:currentFontSize -lt 1)
         {
-          $SCRIPT:currentFontSize = 1 
+          $SCRIPT:currentFontSize = 1
         }
         UpdateFonts $SCRIPT:currentFontSize
-            
+
         $KeyPressEventArgs.Handled = $true
       }
     }
@@ -268,7 +268,7 @@ function Show-Object
       {
         $SCRIPT:currentFontSize++
         UpdateFonts $SCRIPT:currentFontSize
-            
+
         $KeyUpEventArgs.Handled = $true
       }
       elseif ($KeyUpEventArgs.KeyCode -in 'Subtract', 'OemMinus')
@@ -276,17 +276,17 @@ function Show-Object
         $SCRIPT:currentFontSize--
         if ($SCRIPT:currentFontSize -lt 1)
         {
-          $SCRIPT:currentFontSize = 1 
+          $SCRIPT:currentFontSize = 1
         }
         UpdateFonts $SCRIPT:currentFontSize
-            
+
         $KeyUpEventArgs.Handled = $true
       }
       elseif ($KeyUpEventArgs.KeyCode -eq 'D0')
       {
         $SCRIPT:currentFontSize = 12
         UpdateFonts $SCRIPT:currentFontSize
-            
+
         $KeyUpEventArgs.Handled = $true
       }
     }
@@ -297,7 +297,7 @@ function Show-Object
   function OnMouseWheel
   {
     param($Sender, $MouseEventArgs)
-    
+
     if (
       ([System.Windows.Forms.Control]::ModifierKeys -eq "Control") -and
       ($MouseEventArgs.Delta -ne 0))
@@ -305,22 +305,22 @@ function Show-Object
       $SCRIPT:currentFontSize += ($MouseEventArgs.Delta / 120)
       if ($SCRIPT:currentFontSize -lt 1)
       {
-        $SCRIPT:currentFontSize = 1 
+        $SCRIPT:currentFontSize = 1
       }
 
       UpdateFonts $SCRIPT:currentFontSize
       $MouseEventArgs.Handled = $true
     }
   }
-    
+
   ## A function to walk through the parents of a node,
   ## creating virtual PowerShell syntax to access this property.
   function GetPathForNode
   {
     param($Node)
-    
+
     $nodeElements = @()
-    
+
     ## Go through all the parents, adding them so that
     ## $nodeElements is in order.
     while ($Node)
@@ -328,13 +328,13 @@ function Show-Object
       $nodeElements = , $Node + $nodeElements
       $Node = $Node.Parent
     }
-    
+
     ## Now go through the node elements
     $nodePath = ""
     foreach ($Node in $nodeElements)
     {
       $nodeName = $Node.Name
-    
+
       ## If it was a node that PowerShell is able to enumerate
       ## (but not index), wrap it in the array cast operator.
       if ($nodeName.StartsWith('@'))
@@ -352,11 +352,11 @@ function Show-Object
         ## Otherwise, we're accessing a property. Add a dot.
         $nodePath += "."
       }
-    
+
       ## Append the node name to the path
       $nodePath += $nodeName
     }
-    
+
     ## And return the result
     $nodePath
   }
@@ -364,11 +364,11 @@ function Show-Object
   function UpdateFonts
   {
     param($fontSize)
-	
+
     $treeView.Font = New-Object System.Drawing.Font "Consolas", $fontSize
     $outputPane.Font = New-Object System.Drawing.Font "Consolas", $fontSize
   }
-    
+
   $SCRIPT:currentFontSize = 12
 
   ## Create the TreeView, which will hold our object navigation
@@ -381,7 +381,7 @@ function Show-Object
   $treeView.Add_AfterSelect( { OnAfterSelect @args } )
   $treeView.Add_BeforeExpand( { OnBeforeExpand @args } )
   $treeView.Add_KeyPress( { OnTreeViewKeyPress @args } )
-    
+
   ## Create the output pane, which will hold our object
   ## member information.
   $outputPane = New-Object System.Windows.Forms.TextBox
@@ -400,11 +400,11 @@ function Show-Object
   $null = $treeView.Nodes.Add($root)
 
   UpdateFonts $currentFontSize
-    
+
   ## And populate the initial information into the tree
   ## view.
   PopulateNode $root $InputObject
-    
+
   ## Finally, create the main form and show it.
   $form = New-Object Windows.Forms.Form
   $form.Text = "Browsing " + $root.Text
