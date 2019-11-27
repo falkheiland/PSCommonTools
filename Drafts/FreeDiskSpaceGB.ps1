@@ -1,0 +1,1 @@
+[Math]::Round(((Get-CimInstance -ComputerName <server> -ClassName Win32_LogicalDisk | Measure-Object -Property FreeSpace -Sum).Sum / 1GB),1)
