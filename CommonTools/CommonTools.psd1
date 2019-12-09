@@ -80,6 +80,8 @@
     'Invoke-Sqlcmd2'
     'Join-Object'
     'New-Password'
+    'Get-RandomMAC'
+    'Get-RandomStringName'
     'Out-DataTable'
     'Show-Object'
     'Write-Log'
