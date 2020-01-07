@@ -84,6 +84,7 @@
     'Get-RandomStringName'
     'Out-DataTable'
     'Show-Object'
+    'Sort-Reverse'
     'Write-Log'
   )
 
