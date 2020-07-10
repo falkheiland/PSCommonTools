@@ -12,7 +12,7 @@
   RootModule        = 'CommonTools.psm1'
 
   # Die Versionsnummer dieses Moduls
-  ModuleVersion     = '0.0.1'
+  ModuleVersion     = '0.0.2'
 
   # Unterstützte PSEditions
   # CompatiblePSEditions = @()
@@ -24,7 +24,7 @@
   Author            = 'Falk Heiland'
 
   # Unternehmen oder Hersteller dieses Moduls
-  CompanyName       = 'Unbekannt'
+  CompanyName       = ''
 
   # Urheberrechtserklärung für dieses Modul
   Copyright         = '(c) 2019 Falk Heiland. Alle Rechte vorbehalten.'
@@ -72,7 +72,8 @@
   FunctionsToExport = @(
     'Connect-Mstsc'
     'ConvertTo-Object'
-    'New-Password'
+    'Get-RandomMAC'
+    'Get-RandomStringName'
     'Install-ADModule'
     'Invoke-FastPing'
     'Invoke-Parallel'
@@ -80,11 +81,11 @@
     'Invoke-Sqlcmd2'
     'Join-Object'
     'New-Password'
-    'Get-RandomMAC'
-    'Get-RandomStringName'
+    'New-Password'
     'Out-DataTable'
     'Show-Object'
     'Sort-Reverse'
+    'Update-Text'
     'Write-Log'
   )
 
