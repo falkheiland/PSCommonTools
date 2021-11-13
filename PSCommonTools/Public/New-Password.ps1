@@ -19,7 +19,7 @@
       .EXAMPLE
       New-Password -Random -Length 12
   #>
-
+  [cmdletbinding(SupportsShouldProcess, ConfirmImpact = 'Low', DefaultParameterSetName = 'Diceware')]
   param
   (
     [Parameter(ParameterSetName = 'Diceware')]
@@ -88,7 +88,6 @@
           $Password = '{0}{1}{2}' -f $HashValue.Substring(0, 1).ToUpper(), $HashValue.Substring(1), $Password
         }
       }
-      $Password
     }
     Complex
     {
@@ -127,7 +126,7 @@
       }
 
       [string]$Char = -join $CharColl
-      ($Char.ToCharArray() | Sort-Object -Property {
+      $Password = ($Char.ToCharArray() | Sort-Object -Property {
           Get-Random
         }) -join ''
     }
@@ -140,10 +139,14 @@
         $Run++
       }
       [string]$Char = -join $CharColl
-      ($Char.ToCharArray() | Sort-Object -Property {
+      $Password = ($Char.ToCharArray() | Sort-Object -Property {
           Get-Random
         }) -join ''
     }
   }
-}
+  if ($PSCmdlet.ShouldProcess($Password))
+  {
+    $Password
+  }
 
+}

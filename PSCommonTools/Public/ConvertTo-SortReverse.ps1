@@ -1,12 +1,12 @@
 
-function Sort-Reverse
+function ConvertTo-SortReverse
 {
   <#
   .Example
-  Sort-Reverse -Array 'hhh', 'eeee', 'tttt'
+  ConvertTo-SortReverse -Array 'hhh', 'eeee', 'tttt'
 
   .Example
-  Sort-Reverse -Array 5,6,9,2
+  ConvertTo-SortReverse -Array 5,6,9,2
 
   .Notes
   https://gist.github.com/IISResetMe/bcacc1dedabad997b7be18da82c90b98
