@@ -1,5 +1,5 @@
 #
-# Modulmanifest für das Modul "CommonTools"
+# Modulmanifest für das Modul "PSCommonTools"
 #
 # Generiert von: Falk Heiland
 #
@@ -9,10 +9,10 @@
 @{
 
   # Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
-  RootModule        = 'CommonTools.psm1'
+  RootModule        = 'PSCommonTools.psm1'
 
   # Die Versionsnummer dieses Moduls
-  ModuleVersion     = '0.0.2'
+  ModuleVersion     = '1.0.0'
 
   # Unterstützte PSEditions
   # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@
   Copyright         = '(c) 2019 Falk Heiland. Alle Rechte vorbehalten.'
 
   # Beschreibung der von diesem Modul bereitgestellten Funktionen
-  Description       = 'common tools'
+  Description       = 'PowerShell  Module for Common Tools'
 
   # Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
   # PowerShellVersion = ''
@@ -72,19 +72,18 @@
   FunctionsToExport = @(
     'Connect-Mstsc'
     'ConvertTo-Object'
+    'ConvertTo-SortReverse'
     'Get-RandomMAC'
     'Get-RandomStringName'
-    'Install-ADModule'
     'Invoke-FastPing'
     'Invoke-Parallel'
     'Invoke-SQLBulkCopy'
     'Invoke-Sqlcmd2'
     'Join-Object'
-    'New-Password'
+    'Merge-Token'
     'New-Password'
     'Out-DataTable'
     'Show-Object'
-    'Sort-Reverse'
     'Update-Text'
     'Write-Log'
   )

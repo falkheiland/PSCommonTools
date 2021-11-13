@@ -1,7 +1,5 @@
-## CommonTools
+# PSCommonTools
 
-common tools
+'PowerShell Module for Common Tools'
 
 Authored by Falk Heiland
-
-
