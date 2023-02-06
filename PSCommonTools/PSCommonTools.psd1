@@ -12,7 +12,7 @@
   RootModule        = 'PSCommonTools.psm1'
 
   # Die Versionsnummer dieses Moduls
-  ModuleVersion     = '1.0.0'
+  ModuleVersion     = '1.1.0'
 
   # Unterstützte PSEditions
   # CompatiblePSEditions = @()
@@ -71,11 +71,15 @@
   # Aus diesem Modul zu exportierende Funktionen. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Funktionen vorhanden sind.
   FunctionsToExport = @(
     'Connect-Mstsc'
+    'Convert-UnixTime'
+    'Convert-WindowsTime'
     'ConvertTo-Markdown'
     'ConvertTo-Object'
     'ConvertTo-SortReverse'
     'Get-RandomMAC'
     'Get-RandomStringName'
+    'Get-UnixTime'
+    'Get-WindowsTime'
     'Invoke-FastPing'
     'Invoke-Parallel'
     'Invoke-SQLBulkCopy'
